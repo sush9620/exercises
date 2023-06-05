@@ -123,3 +123,25 @@ Vous pouvez prendre n'importe laquelle, les images officielles conviennent parfa
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex2-sol)
 
 [> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex3)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible à l'exercice précédent. Ne pas hésiter à adapter la solution à ce que vous avez produit à l'exercice précédent.
+
+> **Note :** flake8 doit normalement remonter une erreur au sein du fichier `accounting/model/income.py`. Il peut être nécessaire de corriger cette erreur afin que ce job ne bloque plus les pipelines futures.
+>
+> ```diff
+>   # accounting/model/income.py
+>   class Income(Transaction):
+>       def __init__(self, description: str, amount: str):
+> -         super(Income, self).__init__(description, amount, TransactionType.INCOME)
+> +         super(Income, self).__init__(
+>               description,
+>               amount,
+>               TransactionType.INCOME,
+>           )
+> ```
