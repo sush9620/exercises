@@ -87,3 +87,39 @@ Vous pouvez prendre n'importe laquelle, les images officielles conviennent parfa
 Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
 
 > **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+## Exercice 2
+
+La tâche suivante est de mettre en place des contrôles de qualité du code de l'application (aka du lint).
+
+Vous avez décidé d'utiliser [`flake8`](https://flake8.pycqa.org/en/latest/) pour contrôler le code produit.
+
+### Notes pour la mise en place de la CICD
+
+Le job nécessite Python >= 3.8 pour fonctionner. Il faut dans un premier temps **s'assurer d'être dans un environnement virtuel Python activé** avec les **dépendances du projet d'installées**. Voir section `Préparation de l'environnement` ci-dessus pour les commandes nécessaires à l'installation.
+
+`flake8` n'est pas présent dans les dépendances du projet telles qu'elles sont indiquées dans le `requirements.txt`. Il faut donc l'installer au préalable dans le job avant de pouvoir l'utiliser :
+```shell
+pip install flake8
+```
+
+Pour lancer le lint, **il suffit de lancer la commande `flake8` en indiquant le dossier à analyser** :
+
+```shell
+> flake8 accounting
+accounting/model/income.py:11:80: E501 line too long (81 > 79 characters)
+```
+
+Une **image Docker avec Python >= 3.8 est nécessaire** afin de faire tourner le job.
+
+Vous pouvez prendre n'importe laquelle, les images officielles conviennent parfaitement :
+- `python:3.8`
+- `python:3.9`
+- `python:3.10`
+- `python:3.11`
+
+> **Note :** Dans l'état actuel du code, le job lançant `flake8` sera probablement en échec, dû à une erreur de mise en forme dans le code. **C'est normal.**
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex2-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex3)
