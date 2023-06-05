@@ -169,3 +169,18 @@ Tous ces paramètres se **contrôlent via les [`rules`](https://docs.gitlab.com/
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex3-sol)
 
 [> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex4)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible aux exercices précédents. Ne pas hésiter à adapter la solution à ce que vous avez produit aux exercices précédents.
+
+**Quelques explications :**
+
+La règle, identique au deux jobs, se découpe en 3 parties :
+- `$CI_COMMIT_BRANCH`: ici on ne souhaite ajouter le job que dans le cas d'une pipeline lancée pour une branche. La documentation nous indique : *Available in branch pipelines, including pipelines for the default branch. Not available in merge request pipelines or tag pipelines*.
+- `$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH`: la documentation de la variable précédente nous indique que celle-ci est définie aussi pour les pipelines lancées pour la branche par défaut. Comme on ne souhaite lancer ces jobs que pour les branches autres que celle par défaut, il faut filtrer sur le nom de la branche.
+- `$CI_OPEN_MERGE_REQUESTS`: on souhaite de plus ne lancer que les jobs pour les branches qui ont au moins une merge request associée. la documentation de cette variable nous indique: *A comma-separated list of up to four merge requests that use the current branch and project as the merge request source. For example, gitlab-org/gitlab!333,gitlab-org/gitlab-foss!11.*. Ici on est pas intéressé par le(s) merge request(s) associée(s), seulement savoir s'il y en a.
