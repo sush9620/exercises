@@ -275,3 +275,38 @@ Vous pouvez également ajouter une ligne `echo "Using credentials $DEPLOY_USER w
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex5-sol)
 
 [> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex6)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible aux exercices précédents. Ne pas hésiter à adapter la solution à ce que vous avez produit aux exercices précédents.
+
+**Quelques explications :**
+
+Chacune des rules des jobs de déploiements sont similaires, à la seule exception de la règle pour la production qui a en plus `when: manual` pour permettre le lancement du job uniquement à la main.
+
+Deux variables de CI, `DEPLOY_USER` et `DEPLOY_TOKEN`; ont été créées dans le projet, toutes deux marqués comme masquée.
+
+3 nouvelles règles ont été rajoutées au job de build Docker, pour permettre le build et push pour les 3 nouvelles branches. À noter qu'il aurait été possible de regrouper les 4 dernière règles au sein d'une même rule, puisque leur impact sur l'ajout du job est identique. Néanmoins elles ont été séparées pour des soucis de lisibilité.
+
+```yaml
+job:
+  stage: stage
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "deploy/dev"
+    - if: $CI_COMMIT_BRANCH == "deploy/rct"
+    - if: $CI_COMMIT_BRANCH == "deploy/prod"
+  script: ...
+
+# équivalent
+
+job:
+  stage: stage
+  rules:
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH) || ($CI_COMMIT_BRANCH == "deploy/dev") || ($CI_COMMIT_BRANCH == "deploy/rct") || ($CI_COMMIT_BRANCH == "deploy/prod")
+  script: ...
+```
