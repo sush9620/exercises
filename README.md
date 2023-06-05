@@ -39,3 +39,45 @@ source .venv/bin/activate
 export FLASK_APP=accounting.app:setup_app
 flask run --debug
 ```
+
+## Exercice 1
+
+Vous avez été missionné pour mettre en place de manière progressive une chaine de CICD pour une application.
+
+La première tâche qu'on vous a confié est de faire en sorte que l'ensemble des tests unitaires soit lancés de manière automatique à chaque fois que quelqu'un push un changement sur le projet.
+
+### Notes pour la mise en place de la CICD
+
+Les tests utilisent le framework `pytest` pour fonctionner.
+
+Pour les faire lancer, il faut dans un premier temps **s'assurer d'être dans un environnement virtuel Python activé** avec les **dépendances du projet d'installées**. Voir section `Préparation de l'environnement` ci-dessus pour les commandes nécessaires à l'installation.
+
+Pour lancer les tests, **il suffit de lancer la commande `pytest` à la racine du projet** :
+
+```shell
+> pytest
+
+=================== test session starts ===================
+platform linux -- Python 3.11.3, pytest-7.3.1, pluggy-1.0.0
+rootdir: ...
+configfile: pytest.ini
+plugins: cov-4.1.0
+collected 4 items
+
+tests/test_expenses.py ..                            [ 50%]
+tests/test_incomes.py ..                             [100%]
+
+=================== 4 passed in 0.17s =====================
+```
+
+Une **image Docker avec Python >= 3.8 est nécessaire** afin de faire tourner le job.
+
+Vous pouvez prendre n'importe laquelle, les images officielles conviennent parfaitement :
+- `python:3.8`
+- `python:3.9`
+- `python:3.10`
+- `python:3.11`
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex1-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex2)
