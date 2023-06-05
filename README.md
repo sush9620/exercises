@@ -145,3 +145,27 @@ Une solution possible à la tâche demandée est proposée dans le fichier `.git
 >               TransactionType.INCOME,
 >           )
 > ```
+
+## Exercice 3
+
+Après quelques temps d'utilisation de la pipeline que vous avez mis en place, vous avez eu quelques retours qui nécessitent que vous l'adaptiez un peu :
+1. Le job de lint du code qui est bloquant est un peu contraignant
+2. C'est assez lourd de lancer tous les tests à chaque action effectuées sur le projet.
+
+Voici ce qui a été décidé :
+1. Ces deux jobs ne doivent être **lancés que quand la pipeline est lancée pour une branche différente de la branche principale et qui a au moins une merge request d'ouverte associée**. Il a été estimé que le process de vérification du code et de protection des différentes branches autorisait de ne lancer les tests que sur les branches avant de merger sur la branche principale.
+2. Le job de lint du code **ne doit plus être bloquant**
+
+### Notes pour la mise en place de la CICD
+
+Pour faire en sorte qu'un job ne soit ajouté que lorsque sa pipeline est associée à une branche donnée, il faut **ajouter une règle sur la valeur de la variable `CI_COMMIT_BRANCH`**. On peut récupérer le **nom de la branche par défaut dans la variable `CI_DEFAULT_BRANCH`**.
+
+Il est également possible de récupérer une **liste des merge requests associées à la branche en question via la variable `CI_OPEN_MERGE_REQUESTS`**.
+
+Un job non bloquant est un job dont le résultat (succès ou échec) n'influe pas sur le résultat final de la pipeline. Autrement dit c'est un **job qui est autorisé à terminer en échec**.
+
+Tous ces paramètres se **contrôlent via les [`rules`](https://docs.gitlab.com/ee/ci/yaml/#rules)** du job.
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex3-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex4)
