@@ -184,3 +184,48 @@ La règle, identique au deux jobs, se découpe en 3 parties :
 - `$CI_COMMIT_BRANCH`: ici on ne souhaite ajouter le job que dans le cas d'une pipeline lancée pour une branche. La documentation nous indique : *Available in branch pipelines, including pipelines for the default branch. Not available in merge request pipelines or tag pipelines*.
 - `$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH`: la documentation de la variable précédente nous indique que celle-ci est définie aussi pour les pipelines lancées pour la branche par défaut. Comme on ne souhaite lancer ces jobs que pour les branches autres que celle par défaut, il faut filtrer sur le nom de la branche.
 - `$CI_OPEN_MERGE_REQUESTS`: on souhaite de plus ne lancer que les jobs pour les branches qui ont au moins une merge request associée. la documentation de cette variable nous indique: *A comma-separated list of up to four merge requests that use the current branch and project as the merge request source. For example, gitlab-org/gitlab!333,gitlab-org/gitlab-foss!11.*. Ici on est pas intéressé par le(s) merge request(s) associée(s), seulement savoir s'il y en a.
+
+## Exercice 4
+
+Place au déploiement ! Votre application se modernise et il vous faut maintenant la conteneuriser dans une image Docker. On vous a fourni un Dockerfile qui encapsule votre application et ses dépendances, il faut maintenant mettre en place un job qui va builder votre image et la pousser sur une registry.
+
+Les règles pour la mise en place du job de build sont les suivantes:
+- Si la **pipeline est lancée sur une branche différente de la branche par défaut, et à laquelle est associée au moins une merge request** d'ouverte, alors il faut **seulement builder l'image, et ne pas la pousser sur la registry**.
+- Si la **pipeline est lancée sur la branche par défaut**, il faut **builder l'image et la pousser sur la registry**.
+
+### Notes pour la mise en place de la CICD
+
+Pour effectuer le build de notre image, il nous faut un outil capable de construire des images Docker. Comme notre job tourne déjà au sein d'un conteneur Docker, il nous faut un outil qui soit capable de le faire dans ce contexte.
+
+Plusieurs possibilités :
+- [*"Docker-in-docker" (`dind`)*](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker)
+- [kaniko](https://docs.gitlab.com/ee/ci/docker/using_kaniko.html)
+
+Nous allons utiliser la deuxième méthode.
+
+Pour utiliser kaniko au sein d'un job Gitlab CI, il faut **utiliser une image dédiée** :
+
+```yaml
+build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script: ...
+```
+
+**La commande à lancer est la suivante** :
+```bash
+/kaniko/executor
+  --context "${CI_PROJECT_DIR}"
+  --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+  --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
+```
+
+> **Note :** cette exercice utilise la fonctionalité de [registry de conteneur intégrée à Gitlab](https://docs.gitlab.com/ee/user/packages/container_registry/index.html). L'offre SaaS communautaire (ie. [gitlab.com](https://gitlab.com) gratuit) a une limite de 5 Go de stockage total par utilisateur. Les images stockées sur la registry de conteneurs comptent dans le calcul de cette limite. **Pensez à supprimer les images si vous atteignez les limites de l'offre**.
+
+Par défaut, kaniko va construire l'image et la pousser vers la registry indiquée. **Si on ne veut pas pousser l'image, il faut rajouter l'option `--no-push`**.
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex4-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex5)
