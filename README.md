@@ -22,7 +22,10 @@ Pour préparer l'environnement :
 
 ```shell
 python3 -m venv .venv
+
+# Ne pas oublier d'activer l'environnement virtuel (ie. utiliser le Python de cet environnement au lieu de celui de la machine)
 source .venv/bin/activate
+
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
