@@ -245,3 +245,33 @@ On souhaite ajouter notre job de build dans deux cas, on a donc deux règles :
 2. `if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS`:
   - Le cas est le même que pour l'exercice précédent, voir ci-dessus pour une explication détaillée de la règle
   - Dans ce cas, on souhaite uniquement construire l'image et ne pas la pousser vers la registry. On peut définir une variable qui va contenir l'option `--no-push` et qui ne sera définie que dans ce cas. Ainsi dans le cas de la règle 1., la variable ne sera pas définie, et sera donc remplacée par une string vide avant l'execution de la commande.
+
+## Exercice 5
+
+Votre image est construite, il est maintenant temps de la déployer. Vous faîtes les choses bien et vous la déployez sur 3 environnement distincts : dev, recette et prod, via un commit sur 3 branches distinctes, `deploy/dev`, `deploy/rct` et `deploy/prd`.
+
+Il faut donc rajouter 3 jobs pour procéder au déploiement.
+
+Les règles pour ces jobs de déploiements sont les suivants:
+- Le job de déploiement dans un environnement donné ne doit être ajouté que dans le cas où la pipeline est lancée pour sa branche (ie. `deploy/dev` pour déployer en dev...). Le job ne doit pas être ajouté dans les autres cas.
+- Le déploiement sur l'environnement de production ne doit pas être automatique.
+- Le déploiement nécessite des variables `DEPLOY_USER` et `DEPLOY_TOKEN`. Ces variables ne doivent pas être visibles dans la config de la CI ni dans les logs.
+- Le push des images Docker doit être autorisé pour les pipelines lancées pour une de ces 3 branches.
+
+### Notes pour la mise en place de la CICD
+
+Un déploiement non automatique est un **déploiement manuel**. Ce paramètre se **contrôle via les [`rules`](https://docs.gitlab.com/ee/ci/yaml/#rules)** du job.
+
+Pour faire en sorte que des variables ne soient pas visibles dans le fichier de config, il faut qu'elles soient définies comme variable de CI au sein du projet : `[mon projet] > Settings > CI/CD > Variables > Add variable`
+
+> **Note :** bien penser à décocher *Protect variable* lors de la création des variables
+
+Il est également possible de marquer une variable comme sensible afin qu'elle ne soit pas affichée dans les logs des jobs.
+
+Pour ces jobs, il n'y a pas de déploiement réel mis en place, vous pouvez simplement faire un `echo "Deploying to <my env>"` pour simuler l'action.
+
+Vous pouvez également ajouter une ligne `echo "Using credentials $DEPLOY_USER with token $DEPLOY_TOKEN"` pour vous assurer que la valeur est correctement masquée dans les logs.
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex5-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex6)
