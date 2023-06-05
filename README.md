@@ -229,3 +229,19 @@ Par défaut, kaniko va construire l'image et la pousser vers la registry indiqu�
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex4-sol)
 
 [> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex5)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible aux exercices précédents. Ne pas hésiter à adapter la solution à ce que vous avez produit aux exercices précédents.
+
+**Quelques explications :**
+
+On souhaite ajouter notre job de build dans deux cas, on a donc deux règles :
+1. `if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH`: ici on souhaite ajouter le job lorsque la pipeline est lancée sur la branche par défaut
+2. `if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS`:
+  - Le cas est le même que pour l'exercice précédent, voir ci-dessus pour une explication détaillée de la règle
+  - Dans ce cas, on souhaite uniquement construire l'image et ne pas la pousser vers la registry. On peut définir une variable qui va contenir l'option `--no-push` et qui ne sera définie que dans ce cas. Ainsi dans le cas de la règle 1., la variable ne sera pas définie, et sera donc remplacée par une string vide avant l'execution de la commande.
