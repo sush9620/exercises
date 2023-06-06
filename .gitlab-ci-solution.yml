@@ -15,6 +15,23 @@ unit tests:
     - pip install -r requirements.txt
     - pytest
 
+generate swagger:
+  stage: test
+  image: python:3.11
+  variables:
+    FLASK_APP: "accounting.app:setup_app"
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+  script:
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - pip install -r requirements.txt
+    - flask swagger > swagger.json
+  artifacts:
+    paths:
+      - swagger.json
+    expire_in: 10min
+
 code lint:
   stage: code quality
   image: python:3.11
@@ -26,6 +43,19 @@ code lint:
     - source .venv/bin/activate
     - pip install flake8
     - flake8 accounting
+
+swagger lint:
+  stage: code quality
+  dependencies:
+    - generate swagger
+  image:
+    name: stoplight/spectral
+    entrypoint: [""]
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      allow_failure: true
+  script:
+    - spectral lint swagger.json
 
 build docker:
   stage: build

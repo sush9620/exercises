@@ -348,3 +348,21 @@ Il serait techniquement possible de tout faire dans un seul job, mais ça néces
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex6-sol)
 
 [> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex7)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible aux exercices précédents. Ne pas hésiter à adapter la solution à ce que vous avez produit aux exercices précédents.
+
+**Quelques explications :**
+
+Ici on se retrouve avec deux stages qui ont les mêmes règles d'ajout à la pipeline que les autres.
+
+L'utilisation de deux stages séparés permet de se simplifier la vie dans la préparation du job. On se base sur une image Python pour le job nécessitant de générer le swagger puisqu'on a besoin de Flask, et on se base sur une image contenant notre outil CLI pour pouvoir effectuer l'analyse.
+
+La transmission du fichier `swagger.json` entre les deux jobs se fait via un artifact déclaré au niveau du job générant ce fichier.
+
+> **Note :** la solution proposée ajoute dans le job de lint une dépendances au job de génération du swagger. Cette pratique fait le job de lint du swagger ne va récupérer que les artifacts de ce job là, et aucun autre. En l'occurence ici ça n'a pas d'impact, puisqu'au autre job précédent ne génère d'artifact.
