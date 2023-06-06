@@ -398,3 +398,11 @@ Cette option va **générer un fichier `report.xml` au format JUnit** qui pourra
 > **Note :** pour pouvoir tester le résultat de la CI, il faut créer une branche et une merge request associée. Les rapports seront affichés dans l'interface de la merge request
 
 [> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex7-sol)
+
+### Solution proposée
+
+Une solution possible à la tâche demandée est proposée dans le fichier `.gitlab-ci-solution.yml`
+
+> **Note :** Le fichier est nommé ainsi afin qu'il ne soit pas executé automatiquement par Gitlab lors des différentes actions effectuée sur le projet.
+
+> **Note :** Ce fichier contient aussi une solution possible aux exercices précédents. Ne pas hésiter à adapter la solution à ce que vous avez produit aux exercices précédents.

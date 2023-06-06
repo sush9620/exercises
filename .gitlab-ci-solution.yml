@@ -13,7 +13,14 @@ unit tests:
     - python -m venv .venv
     - source .venv/bin/activate
     - pip install -r requirements.txt
-    - pytest
+    - pip install pytest-cov
+    - pytest --junitxml=report.xml --cov --cov-report term --cov-report xml:coverage.xml
+  artifacts:
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 generate swagger:
   stage: test
@@ -55,7 +62,10 @@ swagger lint:
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS
       allow_failure: true
   script:
-    - spectral lint swagger.json
+    - spectral lint swagger.json -f stylish -f junit --output.junit report.xml
+  artifacts:
+    reports:
+      junit: report.xml
 
 build docker:
   stage: build
