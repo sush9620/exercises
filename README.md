@@ -310,3 +310,41 @@ job:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH) || ($CI_COMMIT_BRANCH == "deploy/dev") || ($CI_COMMIT_BRANCH == "deploy/rct") || ($CI_COMMIT_BRANCH == "deploy/prod")
   script: ...
 ```
+
+## Exercice 6
+
+L'application dont vous avez la charge est une API REST, elle fourni donc un [swagger](https://swagger.io/specification/v3/). On vous a donné comme tâche de trouver une manière de s'assurer que le swagger généré est de bonne qualité et respecte la norme (aka du lint).
+
+Vous avez trouvé [spectral](https://stoplight.io/open-source/spectral), un outil en CLI qui semble pouvoir répondre au besoin.
+
+Les contraintes pour mettre en place ce job sont les suivantes :
+- Ce job de contrôle de la qualité du swagger **ne doit pas être bloquant**.
+- Ce job doit être **lancé dans les mêmes conditions que le job de lint précédent**.
+- Pour pouvoir lancer le linter, **il faut avoir généré le swagger de l'API au préalable**, via la commande `FLASK_APP=accounting.app:setup_app flask swagger > swagger.json`.
+
+### Notes pour la mise en place de la CICD
+
+> **Note :** le fichier `.spectral.yaml`, nécessaire au bon fonctionnement de Spectral a été rajouté. Bien penser à le récupérer
+
+Pour pouvoir utiliser la CLI `spectral`, **il faut utiliser une image Docker qui contient cet outil** :
+
+```yaml
+lint:
+  stage: lint
+  image:
+    name: stoplight/spectral
+    entrypoint: [""]
+  script: ...
+```
+
+Ensuite il suffit de **lancer la commande `spectral lint swagger.json`**, `swagger.json` étant un fichier contenant le swagger de l'API généré au préalable.
+
+Pour pouvoir générer le swagger, il faut lancer une commande via l'application Flask (voir au dessus pour la commande à lancer). Cela veut donc dire qu'**il faut un environnement Python avec les dépendances de l'application d'installées**.
+
+Il est **recommandé de faire un job séparé qui se base sur Python pour générer le swagger**, le stocker dans un fichier `swagger.json`, et **le transmettre au job de lint via un artefact**.
+
+Il serait techniquement possible de tout faire dans un seul job, mais ça nécessite soit d'installer Python dans l'image contenant spectral, soit d'installer la CLI dans une image Python.
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex6-sol)
+
+[> Exercice suivant](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex7)
