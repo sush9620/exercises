@@ -366,3 +366,35 @@ L'utilisation de deux stages séparés permet de se simplifier la vie dans la pr
 La transmission du fichier `swagger.json` entre les deux jobs se fait via un artifact déclaré au niveau du job générant ce fichier.
 
 > **Note :** la solution proposée ajoute dans le job de lint une dépendances au job de génération du swagger. Cette pratique fait le job de lint du swagger ne va récupérer que les artifacts de ce job là, et aucun autre. En l'occurence ici ça n'a pas d'impact, puisqu'au autre job précédent ne génère d'artifact.
+
+## Exercice 7
+
+Afin d'améliorer la vie des développeurs de votre application, vous avez découvert qu'il est possible de récolter les résultats des tests Python et de les afficher dans les merge requests.
+
+Vous découvrez qu'il est aussi possible de récupérer, via les tests, des informations sur la couverture du code.
+
+En explorant la documentation de `spectral`, vous vous apercevez que cet outil peut générer des rapports similaires aux rapports des tests Python, et qui peuvent donc être affichés dans une merge request.
+
+### Notes pour la mise en place de la CICD
+
+Afin de pouvoir générer les rapports de tests avec pytest, il faut **rajouter l'option `--junitxml=report.xml`** à la commande de lancement des tests. Cette option va **générer un fichier `report.xml` au format JUnit**.
+
+Pour générer le rapport de couverture, **il faut au préalable installer le package `pytest-cov`**. Il n'est pas nécessaire de rajouter cette dépendances dans le fichier `requirements.txt`, il suffit de l'installer dans le job.
+
+Pour générer ce rapport, il faut ensuite rajouter quelques options à la commande de lancement des tests : **`--cov --cov-report term --cov-report xml:coverage.xml`**. Un **fichier `coverage.xml` sera généré au format Cobertura**.
+
+La **commande complète à lancer est donc `pytest --junitxml=report.xml --cov --cov-report term --cov-report xml:coverage.xml`**.
+
+Ces deux fichiers doivent être **identifiés comme des rapports**, un de test et un de couverture, dans la [section des artifacts](https://docs.gitlab.com/ee/ci/yaml/#artifacts) du job.
+
+Pour générer le rapport au format JUnit pour spectral, **il faut rajouter l'option `-f stylish -f junit --output.junit report.xml`**
+
+La commande totale est donc `spectral lint swagger.json -f stylish -f junit --output.junit report.xml`
+
+Cette option va **générer un fichier `report.xml` au format JUnit** qui pourra être **marqué comme un rapport de tests dans les artifacts du job**.
+
+> **Note :** l'option `-f stylish` permet de continuer d'afficher le résultat des tests dans les logs du job
+
+> **Note :** pour pouvoir tester le résultat de la CI, il faut créer une branche et une merge request associée. Les rapports seront affichés dans l'interface de la merge request
+
+[> Détail d'une solution possible](https://gitlab.com/bastien-antoine/orness/formation-gitlab/exercises/-/tree/ex7-sol)
